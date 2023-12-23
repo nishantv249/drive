@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385919409198",
+    "project_id": "drivecopy-b9297",
+    "storage_bucket": "drivecopy-b9297.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385919409198:android:755762dbcdb0cec93693bf",
+        "android_client_info": {
+          "package_name": "com.nishant.drivecopy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7KPrP4j1N38j4KL5K-yX9sAKEdftDSsQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
