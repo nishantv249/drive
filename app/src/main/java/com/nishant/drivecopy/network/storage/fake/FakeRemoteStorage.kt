@@ -4,8 +4,8 @@ import android.net.Uri
 import com.nishant.drivecopy.network.storage.IRemoteStorage
 import java.lang.IllegalArgumentException
 
-class FakeRemoteStorage : IRemoteStorage {
-
+class FakeRemoteStorage  {
+/*
     // expose it for testing
     val imageStorage by lazy {
         HashSet<String>()
@@ -28,5 +28,5 @@ class FakeRemoteStorage : IRemoteStorage {
 
     companion object{
         const val BASE_PATH = "https://dummurl.com/"
-    }
+    }*/
 }

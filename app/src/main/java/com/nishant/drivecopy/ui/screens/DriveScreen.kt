@@ -2,11 +2,13 @@ package com.nishant.drivecopy.ui.screens
 
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -38,7 +41,7 @@ import coil.compose.rememberAsyncImagePainter
 @Composable
 fun DriveScreen(getImagesViewModel: ImagesViewModel = hiltViewModel()){
 
-    if(isReadPermissionGranted()){
+    if(isReadPermissionGranted() && isNotificationPermissionGranted()){
         val context = LocalContext.current
         LaunchedEffect(Unit) {
             getImagesViewModel.fetchImages(context)
@@ -47,8 +50,13 @@ fun DriveScreen(getImagesViewModel: ImagesViewModel = hiltViewModel()){
 
     val images by getImagesViewModel.getImages().collectAsState(initial = emptyList())
     LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-        items(images){
-            Column {
+        items(images, key = {
+            it.id
+        }){
+            val context = LocalContext.current
+            Column(modifier = Modifier.clickable {
+                getImagesViewModel.uploadImage(it.id, context)
+            }) {
                 val painter  = rememberAsyncImagePainter(model = it.uri)
                 Box {
                     Image(painter = painter, contentDescription = "",
@@ -63,6 +71,26 @@ fun DriveScreen(getImagesViewModel: ImagesViewModel = hiltViewModel()){
         }
     }
 
+}
+
+@Composable
+fun isNotificationPermissionGranted(): Boolean {
+
+    var isPermissionGranted by remember {
+        mutableStateOf(false)
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(contract =
+    ActivityResultContracts.RequestPermission()) { permissionGranted ->
+        isPermissionGranted = permissionGranted
+    }
+
+    LaunchedEffect(key1 = Unit){
+        if(!isPermissionGranted){
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    return  isPermissionGranted
 }
 
 

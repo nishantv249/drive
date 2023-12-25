@@ -37,6 +37,7 @@ class UploadImagesImpl @Inject constructor(private val driveDatabase: DriveDatab
                     if(uploadingState.isUploaded){
                         emit(UploadImageState(80))
                         images.uploadStatus = UploadStatus.UPLOADED.value
+                        images.uri = uploadingState.uri.toString()
                         remoteData.putImage(images)
                         emit(UploadImageState(95))
                         driveDatabase.imagesDao().upsert(listOf(images))

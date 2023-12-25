@@ -13,4 +13,4 @@ interface IRemoteStorage {
 
 }
 
-data class UploadingState(@IntRange(1,100) val progress : Int, val uri: Uri?,val isUploaded : Boolean)
+data class UploadingState(@IntRange(0,100) val progress : Int, val uri: Uri?,val isUploaded : Boolean)

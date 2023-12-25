@@ -11,6 +11,8 @@ import com.nishant.drivecopy.network.remote.IRemoteData
 import com.nishant.drivecopy.network.remote.RemoteData
 import com.nishant.drivecopy.network.storage.FirebaseRemoteStorage
 import com.nishant.drivecopy.network.storage.IRemoteStorage
+import com.nishant.drivecopy.sync.utils.UploadImages
+import com.nishant.drivecopy.sync.utils.UploadImagesImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,13 +32,13 @@ object AppModule {
     }
 
     @Provides
-    fun getRemoteData(remoteData: RemoteData) : IRemoteData{
-        return remoteData
+    fun getRemoteData() : IRemoteData{
+        return RemoteData()
     }
 
     @Provides
-    fun getRemoteStorage(firebaseRemoteStorage: FirebaseRemoteStorage) : IRemoteStorage{
-        return firebaseRemoteStorage
+    fun getRemoteStorage() : IRemoteStorage{
+        return FirebaseRemoteStorage()
     }
 
     @Provides
@@ -47,6 +49,11 @@ object AppModule {
     @Provides
     fun getImagesObserver(@ApplicationContext context: Context, driveDatabase: DriveDatabase,deviceImagesRepository: DeviceImagesRepository) : ImagesObserver{
         return ImagesObserver(context, driveDatabase,deviceImagesRepository)
+    }
+
+    @Provides
+    fun getUploadImages(driveDatabase: DriveDatabase,remoteStorage: FirebaseRemoteStorage,remoteData: RemoteData) : UploadImages{
+        return UploadImagesImpl(driveDatabase,remoteData,remoteStorage)
     }
 
 }

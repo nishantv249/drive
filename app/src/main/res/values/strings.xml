@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DriveCopy</string>
+    <string name="cancel_download">Cancel</string>
 </resources>

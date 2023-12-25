@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.nishant.drivecopy.R
 import com.nishant.drivecopy.db.DriveDatabase
@@ -59,6 +60,10 @@ class UploadRequestedImages @AssistedInject constructor(@Assisted context: Conte
     }
 
     private fun createForeGroundInfo(progress: Int, images: Images): ForegroundInfo {
+        val cancel = applicationContext.getString(R.string.cancel_download)
+        // This PendingIntent can be used to cancel the worker
+        val intent = WorkManager.getInstance(applicationContext)
+            .createCancelPendingIntent(id)
         val notification = NotificationCompat.Builder(
             applicationContext,
             CHANNEL_ID)
@@ -67,6 +72,7 @@ class UploadRequestedImages @AssistedInject constructor(@Assisted context: Conte
             .setProgress(100, progress, false)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setOngoing(true)
+            .addAction(R.drawable.ic_launcher_foreground,cancel,intent)
             .build()
         return ForegroundInfo(images.id.toInt(),notification)
     }

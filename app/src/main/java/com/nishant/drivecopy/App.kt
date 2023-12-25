@@ -12,6 +12,8 @@ import com.nishant.drivecopy.network.remote.IRemoteData
 import com.nishant.drivecopy.network.storage.IRemoteStorage
 import com.nishant.drivecopy.sync.DeleteImagesWorker
 import com.nishant.drivecopy.sync.FetchImagesWorker
+import com.nishant.drivecopy.sync.UploadRequestedImages
+import com.nishant.drivecopy.sync.utils.UploadImages
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -29,19 +31,15 @@ class App : Application(), Configuration.Provider {
 
 class DriveWorkerFactory @Inject constructor (private val driveDatabase: DriveDatabase
         ,private val remoteData: IRemoteData, private val remoteStorage : IRemoteStorage,
-        private val imagesFromDevice : IDeviceImagesRepository) : WorkerFactory(){
+        private val imagesFromDevice : IDeviceImagesRepository,private val uploadImages: UploadImages) : WorkerFactory(){
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
     ): ListenableWorker {
         return when(workerClassName){
-            FetchImagesWorker::class.java.name -> {
-                FetchImagesWorker(appContext, workerParameters, driveDatabase, remoteData,imagesFromDevice)
-            }
-
-            DeleteImagesWorker::class.java.name -> {
-                DeleteImagesWorker(appContext, workerParameters ,driveDatabase, remoteData, remoteStorage)
+            UploadRequestedImages::class.java.name -> {
+                UploadRequestedImages(appContext, workerParameters, driveDatabase, uploadImages)
             }
 
             else -> {
