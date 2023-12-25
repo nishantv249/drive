@@ -12,7 +12,9 @@ import dagger.assisted.AssistedInject
 
 @HiltWorker
 class UploadImagesWorker @AssistedInject constructor(@Assisted private val driveDatabase: DriveDatabase,
-                                                     @Assisted private val uploadImages: UploadImages, @Assisted context: Context, @Assisted workerParameters: WorkerParameters) :
+                                                     @Assisted private val uploadImages: UploadImages,
+                                                     @Assisted context: Context,
+                                                     @Assisted workerParameters: WorkerParameters) :
     CoroutineWorker(context,workerParameters) {
 
     override suspend fun doWork(): Result {

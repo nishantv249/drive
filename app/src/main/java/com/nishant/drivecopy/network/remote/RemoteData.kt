@@ -27,6 +27,7 @@ class RemoteData @Inject constructor()  : IRemoteData {
         firebaseDatabase.child("$id").removeValue().await()
     }
 
+    // TO DO return flow of progress updates
     override suspend fun putImage(image: Images) {
         firebaseDatabase.child("${image.id}").setValue(image).await()
     }

@@ -7,11 +7,14 @@ import com.nishant.drivecopy.db.entity.UploadStatus
 import com.nishant.drivecopy.network.remote.IRemoteData
 import com.nishant.drivecopy.network.storage.IRemoteStorage
 import dagger.hilt.android.internal.ThreadUtil
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
 class UploadImagesImpl @Inject constructor(private val driveDatabase: DriveDatabase,
-                                           private val remoteData : IRemoteData, private  val remoteStorage : IRemoteStorage) : UploadImages {
+                                           private val remoteData : IRemoteData,
+                                           private  val remoteStorage : IRemoteStorage) : UploadImages {
 
     @Throws(RuntimeException::class)
     override suspend fun upload(imagesList: List<Images>) {
@@ -23,23 +26,36 @@ class UploadImagesImpl @Inject constructor(private val driveDatabase: DriveDatab
         }
     }
 
-    private suspend fun upload(image: Images){
-        try {
-            image.uploadStatus = UploadStatus.UPLOADING.value
-            driveDatabase.imagesDao().upsert(listOf(image))
-            image.link = remoteStorage.uploadImage(Uri.parse(image.uri))
-            image.uploadStatus = UploadStatus.UPLOADED.value
-            remoteData.putImage(image)
-            driveDatabase.imagesDao().upsert(listOf(image))
-        }catch (e : Exception){
-            if( e is CancellationException){
-                throw e
-            }
+
+    override fun upload(images: Images): Flow<UploadImageState> {
+        return flow {
             try {
-                image.uploadStatus = UploadStatus.PENDING.value
-                driveDatabase.imagesDao().upsert(listOf(image))
-            }catch (_ : Exception){
-                // this scenario  has to be handled
+                images.uploadStatus = UploadStatus.UPLOADING.value
+                driveDatabase.imagesDao().upsert(listOf(images))
+                val uploadToStorageFlow = remoteStorage.uploadImage(Uri.parse(images.uri))
+                uploadToStorageFlow.collect{ uploadingState ->
+                    if(uploadingState.isUploaded){
+                        emit(UploadImageState(80))
+                        images.uploadStatus = UploadStatus.UPLOADED.value
+                        remoteData.putImage(images)
+                        emit(UploadImageState(95))
+                        driveDatabase.imagesDao().upsert(listOf(images))
+                        emit(UploadImageState(100))
+                    }else{
+                        emit(UploadImageState((uploadingState.progress*0.8).toInt()))
+                    }
+                }
+
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
+                try {
+                    images.uploadStatus = UploadStatus.PENDING.value
+                    driveDatabase.imagesDao().upsert(listOf(images))
+                } catch (_: Exception) {
+                    // this scenario  has to be handled
+                }
             }
         }
     }

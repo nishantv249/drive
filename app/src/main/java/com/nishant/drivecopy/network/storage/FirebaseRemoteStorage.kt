@@ -4,6 +4,9 @@ import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import javax.inject.Inject
@@ -14,12 +17,32 @@ class FirebaseRemoteStorage @Inject constructor() : IRemoteStorage {
         FirebaseStorage.getInstance().getReferenceFromUrl(PATH_TO_STORAGE)
     }
 
-    override suspend fun uploadImage(images: Uri): String {
+    // flow from callback needs to be replaced by callBackFlow
+    override suspend fun uploadImage(images: Uri): Flow<UploadingState> {
         val fileName = UUID.randomUUID().toString()
         val storagePath = "images/$fileName"
         val ref = storageRef.child(storagePath)
-        ref.putFile(images).await()
-        return ref.downloadUrl.await().toString()
+        val uploadProgress = flow{
+            ref.putFile(images).addOnProgressListener {
+                val progress = (100.0 * it.bytesTransferred) / it.totalByteCount
+                suspend {
+                    emit(progress.toInt())
+                }
+            }
+        }
+        val downloadUrlFlow = flow{
+            emit(null)
+            ref.downloadUrl.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    suspend {
+                      emit(it.result)
+                    }
+                }
+            }
+        }
+        return uploadProgress.combine(downloadUrlFlow){  progress, uri ->
+                 UploadingState(progress,uri,uri!=null)
+        }
     }
 
     override suspend fun deleteImage(link: String) {
