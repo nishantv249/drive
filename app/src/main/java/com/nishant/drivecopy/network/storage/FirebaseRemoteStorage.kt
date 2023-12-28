@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
@@ -30,20 +33,19 @@ class FirebaseRemoteStorage @Inject constructor() : IRemoteStorage {
             ref.putFile(images).addOnProgressListener {
                 val progress = (100.0 * it.bytesTransferred) / it.totalByteCount
                 trySend(progress.toInt())
-            }
-            awaitClose()
-        }
-        val downloadUrlFlow = callbackFlow{
-            trySend(null)
-            ref.downloadUrl.addOnCompleteListener {
-                if (it.isSuccessful) {
-                    trySend(it.result)
+                if(progress.toInt() == 100){
+                    channel.close()
                 }
             }
             awaitClose()
         }
-        return uploadProgress.combine(downloadUrlFlow){  progress, uri ->
-                 UploadingState(progress,uri,uri!=null)
+        return uploadProgress.transform{ progress ->
+            when(progress){
+                100 -> {
+                    emit(UploadingState(100,ref.downloadUrl.await(),true))
+                }
+                else -> emit(UploadingState(progress,null,false))
+            }
         }
     }
 
