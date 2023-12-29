@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.nishant.drivecopy.ui.screens.DriveScreen
+import com.nishant.drivecopy.ui.screens.HomeScreen
 import com.nishant.drivecopy.ui.theme.DriveCopyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,25 +29,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DriveScreen()
+                    HomeScreen()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DriveCopyTheme {
-        Greeting("Android")
     }
 }

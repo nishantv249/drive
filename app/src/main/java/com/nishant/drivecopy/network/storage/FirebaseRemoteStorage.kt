@@ -24,7 +24,7 @@ class FirebaseRemoteStorage @Inject constructor() : IRemoteStorage {
         FirebaseStorage.getInstance().getReferenceFromUrl(PATH_TO_STORAGE)
     }
 
-    // flow from callback needs to be replaced by callBackFlow
+    // To Do handle error cases and cancellation
     override suspend fun uploadImage(images: Uri): Flow<UploadingState> {
         val fileName = UUID.randomUUID().toString()
         val storagePath = "images/$fileName"

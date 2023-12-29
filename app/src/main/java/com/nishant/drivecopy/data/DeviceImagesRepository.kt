@@ -27,7 +27,7 @@ class DeviceImagesRepository @Inject constructor(@ApplicationContext private val
             projection,
             null,
             null,
-            null
+            sortOrder
         )?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
             val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)

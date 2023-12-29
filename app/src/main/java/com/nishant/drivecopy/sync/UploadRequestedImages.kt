@@ -61,7 +61,6 @@ class UploadRequestedImages @AssistedInject constructor(@Assisted context: Conte
 
     private fun createForeGroundInfo(progress: Int, images: Images): ForegroundInfo {
         val cancel = applicationContext.getString(R.string.cancel_download)
-        // This PendingIntent can be used to cancel the worker
         val intent = WorkManager.getInstance(applicationContext)
             .createCancelPendingIntent(id)
         val notification = NotificationCompat.Builder(
@@ -71,7 +70,7 @@ class UploadRequestedImages @AssistedInject constructor(@Assisted context: Conte
             .setContentText("Uploading")
             .setProgress(100, progress, false)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setOngoing(true)
+            .setOngoing(progress != 100)
             .addAction(R.drawable.ic_launcher_foreground,cancel,intent)
             .build()
         return ForegroundInfo(images.id.toInt(),notification)

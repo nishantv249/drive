@@ -35,15 +35,15 @@ class UploadImagesImpl @Inject constructor(private val driveDatabase: DriveDatab
                 val uploadToStorageFlow = remoteStorage.uploadImage(Uri.parse(images.uri))
                 uploadToStorageFlow.collect{ uploadingState ->
                     if(uploadingState.isUploaded){
-                        emit(UploadImageState(80))
+                        emit(UploadImageState(95))
                         images.uploadStatus = UploadStatus.UPLOADED.value
                         images.uri = uploadingState.uri.toString()
                         remoteData.putImage(images)
-                        emit(UploadImageState(95))
+                        emit(UploadImageState(97))
                         driveDatabase.imagesDao().upsert(listOf(images))
                         emit(UploadImageState(100))
                     }else{
-                        emit(UploadImageState((uploadingState.progress*0.8).toInt()))
+                        emit(UploadImageState((uploadingState.progress*0.95).toInt()))
                     }
                 }
 
