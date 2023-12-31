@@ -29,10 +29,13 @@ class ImagesViewModel @Inject constructor(private val getImagesUseCase: GetImage
     }
 
     fun uploadImage(id: MutableList<Long>, context: Context) {
-        val int = id.map { it.toInt() }.toIntArray()
-        val data = Data.Builder().putIntArray(UploadRequestedImages.COLLECTED_IMAGES_IDS, int).build()
-        val worker = OneTimeWorkRequestBuilder<UploadRequestedImages>().setInputData(data).build()
-        WorkManager.getInstance(context.applicationContext).beginUniqueWork(id.toString(),ExistingWorkPolicy.KEEP,worker)
+        val workers = mutableListOf<OneTimeWorkRequest>()
+        id.forEach{
+            val data = Data.Builder().putInt(UploadRequestedImages.COLLECTED_IMAGES_IDS, it.toInt()).build()
+            val worker = OneTimeWorkRequestBuilder<UploadRequestedImages>().setInputData(data).build()
+            workers.add(worker)
+        }
+        WorkManager.getInstance(context.applicationContext).beginUniqueWork(id.toString(),ExistingWorkPolicy.KEEP,workers)
             .enqueue()
     }
 

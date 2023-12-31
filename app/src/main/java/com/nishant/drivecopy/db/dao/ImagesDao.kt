@@ -15,8 +15,8 @@ interface ImagesDao {
     @Query("SELECT * FROM Images where uploadStatus = :uploadStatus")
     suspend fun getImagesAwaitingUpload(uploadStatus : Int): List<Images>
 
-    @Query("SELECT * FROM Images where id in (:ids) and uploadStatus = $PENDING")
-    suspend fun getImagesByIds(ids : List<Int>): List<Images>
+    @Query("SELECT * FROM Images where id = :id and uploadStatus = $PENDING")
+    suspend fun getImagesById(id : Int): Images
 
     @Upsert
     suspend fun upsert(images: List<Images>)

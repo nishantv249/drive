@@ -54,7 +54,7 @@ fun DriveScreen(uploadImages : Boolean, getImagesViewModel: ImagesViewModel = hi
         mutableStateListOf()
     }
 
-    if(uploadImages){
+    if(uploadImages && selectionList.size > 0){
         getImagesViewModel.uploadImage(selectionList, LocalContext.current)
         selectionList.clear()
     }
