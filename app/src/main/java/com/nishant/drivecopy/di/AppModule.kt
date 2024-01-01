@@ -11,6 +11,8 @@ import com.nishant.drivecopy.network.remote.IRemoteData
 import com.nishant.drivecopy.network.remote.RemoteData
 import com.nishant.drivecopy.network.storage.FirebaseRemoteStorage
 import com.nishant.drivecopy.network.storage.IRemoteStorage
+import com.nishant.drivecopy.sync.utils.DeleteImages
+import com.nishant.drivecopy.sync.utils.DeleteImagesImpl
 import com.nishant.drivecopy.sync.utils.UploadImages
 import com.nishant.drivecopy.sync.utils.UploadImagesImpl
 import dagger.Binds
@@ -52,8 +54,13 @@ object AppModule {
     }
 
     @Provides
-    fun getUploadImages(driveDatabase: DriveDatabase,remoteStorage: FirebaseRemoteStorage,remoteData: RemoteData) : UploadImages{
+    fun getUploadImagesImpl(driveDatabase: DriveDatabase,remoteStorage: FirebaseRemoteStorage,remoteData: RemoteData) : UploadImages{
         return UploadImagesImpl(driveDatabase,remoteData,remoteStorage)
+    }
+
+    @Provides
+    fun deleteImagesImpl(remoteData: RemoteData,remoteStorage: FirebaseRemoteStorage) : DeleteImages{
+        return DeleteImagesImpl(remoteData,remoteStorage)
     }
 
 }
