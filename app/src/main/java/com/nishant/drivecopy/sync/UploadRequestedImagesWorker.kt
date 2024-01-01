@@ -2,9 +2,7 @@ package com.nishant.drivecopy.sync
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
@@ -18,12 +16,9 @@ import com.nishant.drivecopy.db.entity.Images
 import com.nishant.drivecopy.sync.utils.UploadImages
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import java.util.UUID
 
 @HiltWorker
-class UploadRequestedImages @AssistedInject constructor(
+class UploadRequestedImagesWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted private val workerParameters: WorkerParameters,
     @Assisted private val driveDatabase: DriveDatabase,
@@ -37,12 +32,11 @@ class UploadRequestedImages @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return try {
-            var imagesToUpload: Images? = null
             val id = workerParameters.inputData.getInt(COLLECTED_IMAGES_IDS, 0)
             if(id == 0){
                 Result.success()
             }
-            imagesToUpload = driveDatabase.imagesDao().getImagesById(id)
+            val imagesToUpload = driveDatabase.imagesDao().getImagesById(id)
             createNotificationChannel()
 
             val uploadImagesFlow = uploadImages.upload(imagesToUpload)

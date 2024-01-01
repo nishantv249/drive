@@ -7,32 +7,31 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.nishant.drivecopy.data.ImagesObserver
-import com.nishant.drivecopy.sync.UploadRequestedImages
+import com.nishant.drivecopy.sync.SyncLocalImagesToRemote
+import com.nishant.drivecopy.sync.UploadRequestedImagesWorker
 import com.nishant.drivecopy.usecases.GetImagesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class ImagesViewModel @Inject constructor(private val getImagesUseCase: GetImagesUseCase,
-        private val imagesObserver: ImagesObserver) : ViewModel(){
+        private val syncLocalImagesToRemote: SyncLocalImagesToRemote) : ViewModel(){
 
     fun getImages() = getImagesUseCase()
 
-    fun fetchImages(current: Context) {
-        imagesObserver.initialize()
+    fun fetchImages() {
+        syncLocalImagesToRemote.initialize()
     }
 
     override fun onCleared() {
-        super.onCleared()
-        imagesObserver.clear()
+        syncLocalImagesToRemote.clear()
     }
 
     fun uploadImage(id: MutableList<Long>, context: Context) {
         val workers = mutableListOf<OneTimeWorkRequest>()
         id.forEach{
-            val data = Data.Builder().putInt(UploadRequestedImages.COLLECTED_IMAGES_IDS, it.toInt()).build()
-            val worker = OneTimeWorkRequestBuilder<UploadRequestedImages>().setInputData(data).build()
+            val data = Data.Builder().putInt(UploadRequestedImagesWorker.COLLECTED_IMAGES_IDS, it.toInt()).build()
+            val worker = OneTimeWorkRequestBuilder<UploadRequestedImagesWorker>().setInputData(data).build()
             workers.add(worker)
         }
         WorkManager.getInstance(context.applicationContext).beginUniqueWork(id.toString(),ExistingWorkPolicy.KEEP,workers)

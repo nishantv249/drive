@@ -10,9 +10,7 @@ import com.nishant.drivecopy.data.IDeviceImagesRepository
 import com.nishant.drivecopy.db.DriveDatabase
 import com.nishant.drivecopy.network.remote.IRemoteData
 import com.nishant.drivecopy.network.storage.IRemoteStorage
-import com.nishant.drivecopy.sync.DeleteImagesWorker
-import com.nishant.drivecopy.sync.FetchImagesWorker
-import com.nishant.drivecopy.sync.UploadRequestedImages
+import com.nishant.drivecopy.sync.UploadRequestedImagesWorker
 import com.nishant.drivecopy.sync.utils.UploadImages
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -38,8 +36,8 @@ class DriveWorkerFactory @Inject constructor (private val driveDatabase: DriveDa
         workerParameters: WorkerParameters
     ): ListenableWorker {
         return when(workerClassName){
-            UploadRequestedImages::class.java.name -> {
-                UploadRequestedImages(appContext, workerParameters, driveDatabase, uploadImages)
+            UploadRequestedImagesWorker::class.java.name -> {
+                UploadRequestedImagesWorker(appContext, workerParameters, driveDatabase, uploadImages)
             }
 
             else -> {

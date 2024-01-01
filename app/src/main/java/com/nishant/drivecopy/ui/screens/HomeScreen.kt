@@ -14,14 +14,14 @@ fun HomeScreen(){
     var isSelection by remember {
         mutableStateOf(false)
     }
-    var uploadImages by remember {
+    var uploadImages = remember {
         mutableStateOf(false)
     }
     val onUploadClicked : () -> Unit
     Column {
         if (isSelection) {
             MenuAppBar{
-                uploadImages = true
+                uploadImages.value = true
             }
         } else{
             AppBar()

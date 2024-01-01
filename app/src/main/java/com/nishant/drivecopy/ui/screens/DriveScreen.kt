@@ -5,7 +5,6 @@ import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -41,12 +41,14 @@ import coil.compose.rememberAsyncImagePainter
 import com.nishant.drivecopy.usecases.models.Images
 
 @Composable
-fun DriveScreen(uploadImages : Boolean, getImagesViewModel: ImagesViewModel = hiltViewModel(),changeSelectionState : (isSelection : Boolean) -> Unit){
+fun DriveScreen(
+    uploadImages: MutableState<Boolean>, getImagesViewModel: ImagesViewModel = hiltViewModel(),
+    changeSelectionState: (isSelection : Boolean) -> Unit){
 
     if(isReadPermissionGranted() && isNotificationPermissionGranted()){
         val context = LocalContext.current
         LaunchedEffect(Unit) {
-            getImagesViewModel.fetchImages(context)
+            getImagesViewModel.fetchImages()
         }
     }
 
@@ -54,9 +56,10 @@ fun DriveScreen(uploadImages : Boolean, getImagesViewModel: ImagesViewModel = hi
         mutableStateListOf()
     }
 
-    if(uploadImages && selectionList.size > 0){
+    if(uploadImages.value && selectionList.size > 0){
         getImagesViewModel.uploadImage(selectionList, LocalContext.current)
         selectionList.clear()
+        uploadImages.value = false
     }
 
     changeSelectionState(selectionList.size > 0)
