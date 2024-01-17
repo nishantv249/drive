@@ -88,6 +88,10 @@ dependencies {
     implementation("androidx.work:work-runtime:2.9.0")
 
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-auth")
+
+
 
     androidTestImplementation("androidx.work:work-testing:2.9.0")
     androidTestImplementation ("org.mockito:mockito-android:5.8.0")

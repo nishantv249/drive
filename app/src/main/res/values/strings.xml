@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">DriveCopy</string>
     <string name="cancel_download">Cancel</string>
+    <string name="otp_verification">OTP Verification</string>
+    <string name="otp_verification_sending_message">We will send ONE TIME PASSWORD to this number</string>
+    <string name="send_otp">Get OTP\n</string>
+    <string name="verify">Verify OTP</string>
+    <string name="resend">Resend OTP\n</string>
 </resources>
