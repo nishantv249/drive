@@ -45,7 +45,7 @@ fun OtpInput( otpLength : Int = 6,modifier : Modifier = Modifier, onOtpChanged :
 
     val keyBoard = LocalSoftwareKeyboardController.current
 
-    Row( horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    Row( horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier) {
         repeat(otpLength) { index ->
             CharView(focusRequester = focusRequesters[index], {
                 jumpToPreviousBox(focusRequesters,index)
